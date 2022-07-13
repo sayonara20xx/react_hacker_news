@@ -2,7 +2,7 @@ import "./App.css";
 import HackerNews from "./HackerNews/HackerNews";
 import React from "react";
 
-const App: React.PureComponent = () => {
+const App: () => JSX.Element = () => {
   return (
     <div className="App">
       <HackerNews />

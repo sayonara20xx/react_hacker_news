@@ -6,6 +6,18 @@ import { Route, Routes } from "react-router-dom";
 
 import styled from "styled-components";
 
+export interface response {
+  by: string;
+  id: number;
+  descendants: number;
+  kids: Array<number>;
+  score: number;
+  time: number;
+  title: string;
+  type: string;
+  url: string;
+}
+
 const DivWrapper = styled.div`
   width: 80%;
   margin: 0 auto;
@@ -25,30 +37,30 @@ const ButtonText = styled.p`
   font-size: 20px;
 `;
 
-/*
-    {
-    "by": "workah0lic", "descendants": 75,
-    "id": 32051736, "kids": [ 32052590, 32051939, 32051997, 32052616, 32053090, 32054417, 32055455, 32053687, 32054697, 32053173, 32053530, 32053010, 32055247, 32052595, 32053207, 32052582, 32055862, 32052905, 32052337, 32052049, 32052985, 32052866, 32051998, 32052532 ],
-    "score": 238,
-    "time": 1657508789,
-    "title": "Project Naptha",
-    "type": "story",
-    "url": "https://projectnaptha.com/"
-    }
-*/
-
-const MainPage = (props) => {
+const MainPage: () => JSX.Element | null = () => {
   const url =
     "https://hacker-news.firebaseio.com/v0/topstories.json?print=pretty";
+  const url_new =
+    "https://hacker-news.firebaseio.com/v0/newstories.json?print=pretty";
 
-  const [news, setNews] = useState(() => {
+  const [news, setNews] = useState<Array<response>>(() => {
     return [];
   });
   const [newsIds, setNewsIds] = useState(() => {
     return [];
   });
-  const [selectedNew, setSelectedNew] = useState(() => {
-    return {};
+  const [selectedNew, setSelectedNew] = useState<response>(() => {
+    return {
+      by: "",
+      id: -1,
+      descendants: -1,
+      kids: [],
+      time: -1,
+      title: "",
+      type: "",
+      url: "",
+      score: -1,
+    };
   });
 
   useEffect(() => {
@@ -94,7 +106,7 @@ const MainPage = (props) => {
     });
   }, [newsIds]);
 
-  const refrechButtonClick = () => {
+  const refrechButtonClick = (): void => {
     setNewsIds((prevState) => {
       return [];
     });
@@ -112,7 +124,10 @@ const MainPage = (props) => {
       });
   };
 
-  const setSelectedNewCallback = (event, obj) => {
+  const setSelectedNewCallback = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    obj: response
+  ): void => {
     setSelectedNew(() => {
       return obj;
     });
@@ -129,7 +144,7 @@ const MainPage = (props) => {
                 <ButtonText>Refresh!</ButtonText>
               </RefreshButton>
               {/*{ //JSON.stringify(news, null, 2) }*/}
-              {news.map((elem, index) => {
+              {news.map((elem: response, index) => {
                 return (
                   <NewsSummary
                     data={elem}
@@ -144,6 +159,8 @@ const MainPage = (props) => {
         <Route path="/info" element={<NewsInfo data={selectedNew} />} />
       </Routes>
     );
+  } else {
+    return null;
   }
 };
 

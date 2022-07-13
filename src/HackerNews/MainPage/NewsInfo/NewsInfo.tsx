@@ -32,10 +32,24 @@ const ButtonText = styled.p`
   font-size: 20px;
 `;
 
-const NewsInfo = (props) => {
-  let formatedDate = new Date(props.data.time * 1000);
+interface infoProps {
+  data: {
+    by: string;
+    id: number;
+    descendants: number;
+    kids: Array<number>;
+    score: number;
+    time: number;
+    title: string;
+    type: string;
+    url: string;
+  };
+}
 
-  let [childs, setChilds] = useState(() => {
+const NewsInfo: (arg0: infoProps) => JSX.Element = (props) => {
+  let formattedDate: Date = new Date(props.data.time * 1000);
+
+  let [childs, setChilds] = useState<Array<number>>(() => {
     return [];
   });
 
@@ -64,7 +78,7 @@ const NewsInfo = (props) => {
     }, 60000);
   }, []);
 
-  const refreshOnCLick = () => {
+  const refreshOnCLick = (): void => {
     setChilds(() => {
       return [];
     });
@@ -83,7 +97,7 @@ const NewsInfo = (props) => {
     <NewDiv>
       <p>{"Title: " + props.data.title}</p>
       <p>{"Rating: " + props.data.score + ", author: " + props.data.by}</p>
-      <p>{"Publication date: " + formatedDate}</p>
+      <p>{"Publication date: " + formattedDate}</p>
       <p>{"Descendants: " + props.data.descendants}</p>
       <p>
         {"Link: "}
@@ -98,7 +112,7 @@ const NewsInfo = (props) => {
         </RefreshButton>
       </div>
       <Comms>
-        {childs.map((elem) => {
+        {childs.map((elem: number) => {
           return <Comment id={elem} />;
         })}
       </Comms>

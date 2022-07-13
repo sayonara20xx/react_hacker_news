@@ -12,7 +12,17 @@ const ShiftContainer = styled.div`
   margin-top: 50px;
 `;
 
-const Comment = (props) => {
+export interface CommProps {
+  id: number;
+}
+
+export interface CommInfo {
+  text: string;
+  kids: Array<number>;
+  by: string;
+}
+
+const Comment: (props: any) => JSX.Element = (props: CommProps) => {
   const [commInfo, setCommInfo] = useState(() => {
     return {
       text: "",
@@ -37,9 +47,9 @@ const Comment = (props) => {
           };
         })
       );
-  }, []);
+  }, [props.id]);
 
-  const returnComms = () => {
+  const returnComms: () => JSX.Element | null = () => {
     if (isClicked && commInfo.kids && props.id && commInfo.kids.length > 0)
       return (
         <ShiftContainer>
