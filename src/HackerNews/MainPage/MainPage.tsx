@@ -26,15 +26,34 @@ const DivWrapper = styled.div`
 `;
 
 const RefreshButton = styled.button`
-  width: 80%;
-  height: 40px;
-  margin-bottom: 10px;
+  width: 40%;
+  height: 35px;
+  margin: 0 auto 10px auto;
   border-radius: 10px;
   background-color: #e35d63;
 `;
 
 const ButtonText = styled.p`
   font-size: 20px;
+`;
+
+const NewsListHeader = styled.div`
+  width: 60%;
+  background-color: #fda06d;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 0 auto 20px auto;
+`;
+
+const HeaderText = styled.p`
+  font-size: 30px;
+  text-align: center;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const MainPage: () => JSX.Element | null = () => {
@@ -140,10 +159,16 @@ const MainPage: () => JSX.Element | null = () => {
           path="/"
           element={
             <DivWrapper>
-              <RefreshButton onClick={refreshButtonClick}>
-                <ButtonText>Refresh!</ButtonText>
-              </RefreshButton>
-              {/*{ //JSON.stringify(news, null, 2) }*/}
+              <NewsListHeader>
+                <HeaderText>Welcome to Hacker news (new!)</HeaderText>
+              </NewsListHeader>
+
+              <ButtonContainer>
+                <RefreshButton onClick={refreshButtonClick}>
+                  <ButtonText>Refresh!</ButtonText>
+                </RefreshButton>
+              </ButtonContainer>
+
               {news.map((elem: response, index) => {
                 return (
                   <NewsSummary

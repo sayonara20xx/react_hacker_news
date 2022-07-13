@@ -8,7 +8,7 @@ const DivContainer = styled.div`
   background-color: #fda06d;
   border-radius: 10px;
   padding: 10px;
-  margin-bottom: 10px;
+  margin: 0 auto 10px auto;
 `;
 
 export interface props {

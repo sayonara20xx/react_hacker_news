@@ -5,11 +5,19 @@ import styled from "styled-components";
 const Comm = styled.div`
   background-color: #fda06d;
   margin-top: 20px;
+  padding: 5px;
+  border-radius: 5px;
+
+  border: solid 1px black;
 `;
 
 const ShiftContainer = styled.div`
   margin-left: 50px;
   margin-top: 50px;
+`;
+
+const NIcknameP = styled.p`
+  font-size: 20px;
 `;
 
 export interface CommProps {
@@ -81,7 +89,7 @@ const Comment: (props: any) => JSX.Element = (props: CommProps) => {
 
   return (
     <Comm>
-      <p>{commInfo.by}</p>
+      <NIcknameP>{commInfo.by}</NIcknameP>
       <p onClick={commClicked}>{returnText()}</p>
       {returnComms()}
     </Comm>

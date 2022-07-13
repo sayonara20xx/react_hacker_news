@@ -11,8 +11,16 @@ const NewDiv = styled.div`
   padding: 20px;
 `;
 
+const NewHeaderDiv = styled.div`
+  width: 50%;
+  margin: 0 auto;
+  background-color: burlywood;
+
+  border-radius: 10px;
+  padding: 10px;
+`;
+
 const Comms = styled.div`
-  background-color: cadetblue;
   margin-top: 20px;
 `;
 
@@ -21,7 +29,6 @@ const NavLinkText = styled.p`
 `;
 
 const RefreshButton = styled.button`
-  margin: 20px 0;
   width: 50%;
   height: 50px;
   background-color: #e35d63;
@@ -29,6 +36,11 @@ const RefreshButton = styled.button`
 `;
 
 const ButtonText = styled.p`
+  font-size: 20px;
+  padding-top: 5px;
+`;
+
+const TitleText = styled.p`
   font-size: 20px;
 `;
 
@@ -95,22 +107,26 @@ const NewsInfo: (arg0: infoProps) => JSX.Element = (props) => {
 
   return (
     <NewDiv>
-      <p>{"Title: " + props.data.title}</p>
-      <p>{"Rating: " + props.data.score + ", author: " + props.data.by}</p>
-      <p>{"Publication date: " + formattedDate}</p>
-      <p>{"Descendants: " + props.data.descendants}</p>
-      <p>
-        {"Link: "}
-        <a href={props.data.url}>{props.data.url}</a>
-      </p>
-      <NavLink to="/">
-        <NavLinkText>Back</NavLinkText>
-      </NavLink>
-      <div>
-        <RefreshButton onClick={refreshOnCLick}>
-          <ButtonText>Refresh comments!</ButtonText>
-        </RefreshButton>
-      </div>
+      <NewHeaderDiv>
+        <TitleText>{"Title: " + props.data.title}</TitleText>
+        <TitleText>
+          {"Rating: " + props.data.score + ", author: " + props.data.by}
+        </TitleText>
+        <TitleText>{"Publication date: " + formattedDate}</TitleText>
+        <TitleText>{"Descendants: " + props.data.descendants}</TitleText>
+        <TitleText>
+          {"Link: "}
+          <a href={props.data.url}>{props.data.url}</a>
+        </TitleText>
+        <NavLink to="/">
+          <NavLinkText>Back to news list...</NavLinkText>
+        </NavLink>
+        <div>
+          <RefreshButton onClick={refreshOnCLick}>
+            <ButtonText>Refresh comments!</ButtonText>
+          </RefreshButton>
+        </div>
+      </NewHeaderDiv>
       <Comms>
         {child.map((elem: number) => {
           return <Comment id={elem} />;
