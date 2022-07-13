@@ -29,7 +29,7 @@ const MainPage = (props) => {
   });
   const [selectedNew, setSelectedNew] = useState(() => {
     return {};
-  })
+  });
 
   useEffect(() => {
     fetch(url)
@@ -42,20 +42,22 @@ const MainPage = (props) => {
       });
 
     setInterval(() => {
-      setNewsIds((prevState) => {
-        return [];
-      });
-      setNews((prevState) => {
-        return [];
-      });
-      fetch(url)
-        .then((response) => response.json())
-        // Костыль: у веб апи нельзя определить кол-во постов, получаем 500, выкидываю 400
-        .then((json) => {
-          setNewsIds(() => {
-            return json.slice(0, 100);
-          });
+      if (window.location.pathname === "/") {
+        setNewsIds((prevState) => {
+          return [];
         });
+        setNews((prevState) => {
+          return [];
+        });
+        fetch(url)
+          .then((response) => response.json())
+          // Костыль: у веб апи нельзя определить кол-во постов, получаем 500, выкидываю 400
+          .then((json) => {
+            setNewsIds(() => {
+              return json.slice(0, 100);
+            });
+          });
+      }
     }, 60000);
   }, []);
 
@@ -93,8 +95,8 @@ const MainPage = (props) => {
   const setSelectedNewCallback = (event, obj) => {
     setSelectedNew(() => {
       return obj;
-    })
-  }
+    });
+  };
 
   if (newsIds.length > 0) {
     return (
@@ -111,15 +113,18 @@ const MainPage = (props) => {
               </button>
               {/*{ //JSON.stringify(news, null, 2) }*/}
               {news.map((elem, index) => {
-                return <NewsSummary data={elem} number={index} select={setSelectedNewCallback}></NewsSummary>;
+                return (
+                  <NewsSummary
+                    data={elem}
+                    number={index}
+                    select={setSelectedNewCallback}
+                  ></NewsSummary>
+                );
               })}
             </div>
           }
         />
-        <Route
-          path="/info"
-          element={<NewsInfo data={selectedNew}/>}
-        />
+        <Route path="/info" element={<NewsInfo data={selectedNew} />} />
       </Routes>
     );
   }
