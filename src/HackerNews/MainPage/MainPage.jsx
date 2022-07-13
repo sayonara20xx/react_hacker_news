@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import NewsSummary from "./NewsSummary/NewsSummary";
 import NewsInfo from "./NewsInfo/NewsInfo";
 
-import classes from "./MainPage.module.css";
 import { Route, Routes } from "react-router-dom";
 
 import styled from "styled-components";
@@ -10,8 +9,20 @@ import styled from "styled-components";
 const DivWrapper = styled.div`
   width: 80%;
   margin: 0 auto;
-  background-color: #E37D62;
+  background-color: #e37d62;
   padding: 30px;
+`;
+
+const RefreshButton = styled.button`
+  width: 80%;
+  height: 40px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  background-color: #e35d63;
+`;
+
+const ButtonText = styled.p`
+  font-size: 20px;
 `;
 
 /*
@@ -114,12 +125,9 @@ const MainPage = (props) => {
           path="/"
           element={
             <DivWrapper>
-              <button
-                onClick={refrechButtonClick}
-                className={classes.refreshButton}
-              >
-                <p className={classes.buttonText}>Refresh!</p>
-              </button>
+              <RefreshButton onClick={refrechButtonClick}>
+                <ButtonText>Refresh!</ButtonText>
+              </RefreshButton>
               {/*{ //JSON.stringify(news, null, 2) }*/}
               {news.map((elem, index) => {
                 return (

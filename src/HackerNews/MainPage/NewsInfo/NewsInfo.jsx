@@ -1,8 +1,36 @@
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 
-import classes from "./NewsInfo.module.css";
 import Comment from "./Comment/Comment";
+import styled from "styled-components";
+
+const NewDiv = styled.div`
+  width: 80%;
+  margin: 0 auto;
+  background-color: bisque;
+  padding: 20px;
+`;
+
+const Comms = styled.div`
+  background-color: cadetblue;
+  margin-top: 20px;
+`;
+
+const NavLinkText = styled.p`
+  font-size: 20px;
+`;
+
+const RefreshButton = styled.button`
+  margin: 20px 0;
+  width: 50%;
+  height: 50px;
+  background-color: #e35d63;
+  border-radius: 20px;
+`;
+
+const ButtonText = styled.p`
+  font-size: 20px;
+`;
 
 const NewsInfo = (props) => {
   let formatedDate = new Date(props.data.time * 1000);
@@ -52,7 +80,7 @@ const NewsInfo = (props) => {
   };
 
   return (
-    <div className={classes.newdiv}>
+    <NewDiv>
       <p>{"Title: " + props.data.title}</p>
       <p>{"Rating: " + props.data.score + ", author: " + props.data.by}</p>
       <p>{"Publication date: " + formatedDate}</p>
@@ -62,19 +90,19 @@ const NewsInfo = (props) => {
         <a href={props.data.url}>{props.data.url}</a>
       </p>
       <NavLink to="/">
-        <p className={classes.navLinkText}>Back</p>
+        <NavLinkText>Back</NavLinkText>
       </NavLink>
       <div>
-        <button onClick={refreshOnCLick} className={classes.refreshButton}>
-          <p>Refresh comments!</p>
-        </button>
+        <RefreshButton onClick={refreshOnCLick}>
+          <ButtonText>Refresh comments!</ButtonText>
+        </RefreshButton>
       </div>
-      <div className={classes.comms}>
+      <Comms>
         {childs.map((elem) => {
           return <Comment id={elem} />;
         })}
-      </div>
-    </div>
+      </Comms>
+    </NewDiv>
   );
 };
 

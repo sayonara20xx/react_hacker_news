@@ -1,6 +1,16 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 
-import classes from "./Comment.module.css";
+import styled from "styled-components";
+
+const Comm = styled.div`
+  background-color: #fda06d;
+  margin-top: 20px;
+`;
+
+const ShiftContainer = styled.div`
+  margin-left: 50px;
+  margin-top: 50px;
+`;
 
 const Comment = (props) => {
   const [commInfo, setCommInfo] = useState(() => {
@@ -9,7 +19,7 @@ const Comment = (props) => {
       kids: [],
       by: "",
     };
-  })
+  });
 
   const [isClicked, setIsClicked] = useState(() => false);
 
@@ -32,21 +42,20 @@ const Comment = (props) => {
   const returnComms = () => {
     if (isClicked && commInfo.kids && props.id && commInfo.kids.length > 0)
       return (
-        <div className={classes.shiftContainer}>
+        <ShiftContainer>
           {commInfo.kids.map((elem) => {
-            return <Comment id={elem}/>
+            return <Comment id={elem} />;
           })}
-        </div>
+        </ShiftContainer>
       );
-    else
-      return null;
+    else return null;
   };
 
   const commClicked = () => {
     setIsClicked((prevState) => {
       return !prevState;
-    })
-  }
+    });
+  };
 
   const returnText = () => {
     if (!commInfo.text) {
@@ -56,16 +65,16 @@ const Comment = (props) => {
     if (!commInfo.kids) {
       return commInfo.text;
     } else {
-      return commInfo.text + ". Click on text to watch reply(es)."
+      return commInfo.text + ". Click on text to watch reply(es).";
     }
-  }
+  };
 
   return (
-    <div className={classes.comm}>
+    <Comm>
       <p>{commInfo.by}</p>
       <p onClick={commClicked}>{returnText()}</p>
       {returnComms()}
-    </div>
+    </Comm>
   );
 };
 
