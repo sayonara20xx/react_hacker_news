@@ -1,12 +1,13 @@
 import "./App.css";
 import HackerNews from "./HackerNews/HackerNews";
+import React from "react";
 
-function App() {
+const App: React.PureComponent = () => {
   return (
     <div className="App">
       <HackerNews />
     </div>
   );
-}
+};
 
 export default App;
