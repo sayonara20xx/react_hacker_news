@@ -75,10 +75,10 @@ const MainPage: () => JSX.Element | null = () => {
 
     setInterval(() => {
       if (window.location.pathname === "/") {
-        setNewsIds((prevState) => {
+        setNewsIds(() => {
           return [];
         });
-        setNews((prevState) => {
+        setNews(() => {
           return [];
         });
         fetch(url)
@@ -106,11 +106,11 @@ const MainPage: () => JSX.Element | null = () => {
     });
   }, [newsIds]);
 
-  const refrechButtonClick = (): void => {
-    setNewsIds((prevState) => {
+  const refreshButtonClick = (): void => {
+    setNewsIds(() => {
       return [];
     });
-    setNews((prevState) => {
+    setNews(() => {
       return [];
     });
 
@@ -140,7 +140,7 @@ const MainPage: () => JSX.Element | null = () => {
           path="/"
           element={
             <DivWrapper>
-              <RefreshButton onClick={refrechButtonClick}>
+              <RefreshButton onClick={refreshButtonClick}>
                 <ButtonText>Refresh!</ButtonText>
               </RefreshButton>
               {/*{ //JSON.stringify(news, null, 2) }*/}

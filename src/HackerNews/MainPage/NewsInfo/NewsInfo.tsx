@@ -49,12 +49,12 @@ interface infoProps {
 const NewsInfo: (arg0: infoProps) => JSX.Element = (props) => {
   let formattedDate: Date = new Date(props.data.time * 1000);
 
-  let [childs, setChilds] = useState<Array<number>>(() => {
+  let [child, setChild] = useState<Array<number>>(() => {
     return [];
   });
 
   useEffect(() => {
-    setChilds(() => {
+    setChild(() => {
       return props.data.kids;
     });
   }, [props.data.kids]);
@@ -62,7 +62,7 @@ const NewsInfo: (arg0: infoProps) => JSX.Element = (props) => {
   useEffect(() => {
     setInterval(() => {
       if (window.location.pathname === "/info") {
-        setChilds(() => {
+        setChild(() => {
           return [];
         });
 
@@ -70,16 +70,16 @@ const NewsInfo: (arg0: infoProps) => JSX.Element = (props) => {
         fetch(url)
           .then((response) => response.json())
           .then((json) => {
-            setChilds(() => {
+            setChild(() => {
               return json.kids;
             });
           });
       }
     }, 60000);
-  }, []);
+  }, [props.data.id]);
 
   const refreshOnCLick = (): void => {
-    setChilds(() => {
+    setChild(() => {
       return [];
     });
 
@@ -87,7 +87,7 @@ const NewsInfo: (arg0: infoProps) => JSX.Element = (props) => {
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
-        setChilds(() => {
+        setChild(() => {
           return json.kids;
         });
       });
@@ -112,7 +112,7 @@ const NewsInfo: (arg0: infoProps) => JSX.Element = (props) => {
         </RefreshButton>
       </div>
       <Comms>
-        {childs.map((elem: number) => {
+        {child.map((elem: number) => {
           return <Comment id={elem} />;
         })}
       </Comms>
