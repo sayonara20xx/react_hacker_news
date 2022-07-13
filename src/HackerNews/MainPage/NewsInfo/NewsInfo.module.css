@@ -1,0 +1,27 @@
+.newdiv {
+    width: 80%;
+    margin: 0 auto;
+    background-color: bisque;
+    padding: 20px;
+}
+
+.comms {
+    background-color: cadetblue;
+    margin-top: 20px;
+}
+
+.navLinkText {
+    font-size: 20px;
+}
+
+.refreshButton {
+    margin: 20px 0;
+    width: 50%;
+    height: 50px;
+    background-color: #E35D63;
+    border-radius: 20px;
+}
+
+.refreshButton p {
+    font-size: 20px;
+}

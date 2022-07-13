@@ -5,6 +5,15 @@ import NewsInfo from "./NewsInfo/NewsInfo";
 import classes from "./MainPage.module.css";
 import { Route, Routes } from "react-router-dom";
 
+import styled from "styled-components";
+
+const DivWrapper = styled.div`
+  width: 80%;
+  margin: 0 auto;
+  background-color: #E37D62;
+  padding: 30px;
+`;
+
 /*
     {
     "by": "workah0lic", "descendants": 75,
@@ -104,7 +113,7 @@ const MainPage = (props) => {
         <Route
           path="/"
           element={
-            <div className={classes.newsContainer}>
+            <DivWrapper>
               <button
                 onClick={refrechButtonClick}
                 className={classes.refreshButton}
@@ -121,7 +130,7 @@ const MainPage = (props) => {
                   ></NewsSummary>
                 );
               })}
-            </div>
+            </DivWrapper>
           }
         />
         <Route path="/info" element={<NewsInfo data={selectedNew} />} />
