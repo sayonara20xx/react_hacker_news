@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import React, { useContext, useEffect, useState } from 'react';
+import { NavLink } from 'react-router-dom';
 
-import Comment from "./Comment/Comment";
-import styled from "styled-components";
+import Comment from './Comment';
+import styled from 'styled-components';
+
+import { NewsContext } from './SelectedNewStore';
 
 const NewDiv = styled.div`
   width: 80%;
@@ -20,7 +22,7 @@ const NewHeaderDiv = styled.div`
   padding: 10px;
 `;
 
-const Comms = styled.div`
+const Comments = styled.div`
   margin-top: 20px;
 `;
 
@@ -44,22 +46,11 @@ const TitleText = styled.p`
   font-size: 20px;
 `;
 
-interface infoProps {
-  data: {
-    by: string;
-    id: number;
-    descendants: number;
-    kids: Array<number>;
-    score: number;
-    time: number;
-    title: string;
-    type: string;
-    url: string;
-  };
-}
+const NewsInfo: React.FC = () => {
+  let store = useContext(NewsContext);
+  let selectedNew = store?.selectedNew;
 
-const NewsInfo: (arg0: infoProps) => JSX.Element = (props) => {
-  let formattedDate: Date = new Date(props.data.time * 1000);
+  let formattedDate: Date = new Date(selectedNew.time * 1000);
 
   let [child, setChild] = useState<Array<number>>(() => {
     return [];
@@ -67,18 +58,18 @@ const NewsInfo: (arg0: infoProps) => JSX.Element = (props) => {
 
   useEffect(() => {
     setChild(() => {
-      return props.data.kids;
+      return selectedNew.kids;
     });
-  }, [props.data.kids]);
+  }, [selectedNew.kids]);
 
   useEffect(() => {
     setInterval(() => {
-      if (window.location.pathname === "/info") {
+      if (window.location.pathname === '/info') {
         setChild(() => {
           return [];
         });
 
-        let url = `https://hacker-news.firebaseio.com/v0/item/${props.data.id}.json?print=pretty`;
+        let url = `https://hacker-news.firebaseio.com/v0/item/${selectedNew.id}.json?print=pretty`;
         fetch(url)
           .then((response) => response.json())
           .then((json) => {
@@ -88,14 +79,14 @@ const NewsInfo: (arg0: infoProps) => JSX.Element = (props) => {
           });
       }
     }, 60000);
-  }, [props.data.id]);
+  }, [selectedNew.id]);
 
   const refreshOnCLick = (): void => {
     setChild(() => {
       return [];
     });
 
-    let url = `https://hacker-news.firebaseio.com/v0/item/${props.data.id}.json?print=pretty`;
+    let url = `https://hacker-news.firebaseio.com/v0/item/${selectedNew.id}.json?print=pretty`;
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
@@ -105,18 +96,24 @@ const NewsInfo: (arg0: infoProps) => JSX.Element = (props) => {
       });
   };
 
+  const getChild = (): JSX.Element[] | null => {
+    if (!child) return null;
+
+    return child.map((elem: number) => {
+      return <Comment id={elem} key={elem} />;
+    });
+  };
+
   return (
     <NewDiv>
       <NewHeaderDiv>
-        <TitleText>{"Title: " + props.data.title}</TitleText>
+        <TitleText>{'Title: ' + selectedNew.title}</TitleText>
+        <TitleText>{'Rating: ' + selectedNew.score + ', author: ' + selectedNew.by}</TitleText>
+        <TitleText>{'Publication date: ' + formattedDate}</TitleText>
+        <TitleText>{'Comments quantity: ' + selectedNew.descendants}</TitleText>
         <TitleText>
-          {"Rating: " + props.data.score + ", author: " + props.data.by}
-        </TitleText>
-        <TitleText>{"Publication date: " + formattedDate}</TitleText>
-        <TitleText>{"Descendants: " + props.data.descendants}</TitleText>
-        <TitleText>
-          {"Link: "}
-          <a href={props.data.url}>{props.data.url}</a>
+          {'Link: '}
+          <a href={selectedNew.url}>{selectedNew.url}</a>
         </TitleText>
         <NavLink to="/">
           <NavLinkText>Back to news list...</NavLinkText>
@@ -127,11 +124,7 @@ const NewsInfo: (arg0: infoProps) => JSX.Element = (props) => {
           </RefreshButton>
         </div>
       </NewHeaderDiv>
-      <Comms>
-        {child.map((elem: number) => {
-          return <Comment id={elem} />;
-        })}
-      </Comms>
+      <Comments>{getChild()}</Comments>
     </NewDiv>
   );
 };
