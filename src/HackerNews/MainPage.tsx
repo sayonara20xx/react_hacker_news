@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
 import { Response } from './Interfaces';
@@ -44,6 +44,7 @@ const ButtonContainer = styled.div`
 
 const MainPage: React.FC = () => {
   const newStoriesUrl = 'https://hacker-news.firebaseio.com/v0/newstories.json?print=pretty';
+  const IntervalID: React.MutableRefObject<NodeJS.Timer | undefined> = useRef();
 
   const [news, setNews] = useState<Array<Response>>(() => {
     return [];
@@ -63,34 +64,33 @@ const MainPage: React.FC = () => {
       });
     });
 
-    setInterval(() => {
-      if (window.location.pathname === '/') {
-        setNewsIds(() => {
-          return [];
-        });
-        setNews(() => {
-          return [];
-        });
+    IntervalID.current = setInterval(() => {
+      setNewsIds(() => {
+        return [];
+      });
+      setNews(() => {
+        return [];
+      });
 
-        fetchNewsIdsByUrl(newStoriesUrl).then((json) => {
-          setNewsIds(() => {
-            return json.slice(0, 100);
-          });
+      fetchNewsIdsByUrl(newStoriesUrl).then((json) => {
+        setNewsIds(() => {
+          return json.slice(0, 100);
         });
-      }
+      });
     }, 60000);
   }, []);
 
   useEffect(() => {
     let tempArray: Response[] = [];
-
     newsIds.forEach((id) => {
       let detailsUrl = `https://hacker-news.firebaseio.com/v0/item/${id}.json?print=pretty`;
+
       fetch(detailsUrl)
         .then((response) => response.json())
         .then((json) => {
           tempArray = [...tempArray, json];
           if (tempArray.length === 100) {
+            tempArray = tempArray.sort((a, b) => a.time - b.time);
             setNews(tempArray);
           }
         });
@@ -118,13 +118,9 @@ const MainPage: React.FC = () => {
     if (news?.length === 0) return <p>Loading...</p>;
 
     return news.map((elem: Response, index) => {
-      return <NewsSummary data={elem} number={index} key={elem.title} />;
+      return <NewsSummary data={elem} number={index} key={elem.title} interval_id={IntervalID.current} />;
     });
   };
-
-  if (newsIds.length === 0) {
-    return null;
-  }
 
   return (
     <DivWrapper>

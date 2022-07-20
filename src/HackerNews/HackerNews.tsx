@@ -25,6 +25,8 @@ const HackerNews: () => JSX.Element = () => {
     setSelectedNew(() => {
       return obj;
     });
+
+    localStorage.setItem('selectedNewObject', JSON.stringify(obj));
   };
 
   const SelectedNewStore = {

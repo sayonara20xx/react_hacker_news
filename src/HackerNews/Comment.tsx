@@ -27,6 +27,10 @@ const Comment: React.FC<CommentProps> = (props: CommentProps) => {
     return null;
   });
 
+  const [commentKids, setCommentKids] = useState<number[] | null>(() => {
+    return [];
+  });
+
   const [isClicked, setIsClicked] = useState(() => false);
 
   useEffect(() => {
@@ -38,22 +42,33 @@ const Comment: React.FC<CommentProps> = (props: CommentProps) => {
         setCommentInfo(() => {
           return {
             text: json.text,
-            kids: json.kids,
             by: json.by,
           };
         }),
       );
   }, [props.id]);
 
-  const returnComments: () => JSX.Element | null = () => {
-    if (!isClicked || !commentInfo?.kids || !props.id || commentInfo.kids.length === 0) {
+  useEffect(() => {
+    let url = `https://hacker-news.firebaseio.com/v0/item/${props.id}.json?print=pretty`;
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((json) => {
+        setCommentKids(() => {
+          return json.kids;
+        });
+      });
+  }, [props.id]);
+
+  const renderComments: () => JSX.Element | null = () => {
+    if (!isClicked || !commentKids || !props.id || commentKids.length === 0) {
       return null;
     }
 
     return (
       <ShiftContainer>
-        {commentInfo?.kids.map((elem) => {
-          return <Comment id={elem} key={elem} />;
+        {commentKids.map((elem) => {
+          return <Comment id={elem} key={elem} child={null} />;
         })}
       </ShiftContainer>
     );
@@ -70,7 +85,7 @@ const Comment: React.FC<CommentProps> = (props: CommentProps) => {
       return 'loading...';
     }
 
-    if (!commentInfo?.kids) {
+    if (!commentKids) {
       return parse(commentInfo.text);
     } else {
       return (
@@ -86,7 +101,7 @@ const Comment: React.FC<CommentProps> = (props: CommentProps) => {
     <Comm>
       <Nickname>{commentInfo?.by}</Nickname>
       <div onClick={commClicked}>{returnText()}</div>
-      {returnComments()}
+      {renderComments()}
     </Comm>
   );
 };

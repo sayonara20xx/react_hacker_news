@@ -26,15 +26,16 @@ export interface NewsSummaryProps {
   };
 
   number: number;
+  interval_id: NodeJS.Timer | undefined;
 }
 
 export interface CommentInfo {
   text: string;
-  kids: Array<number>;
   by: string;
 }
 
 export interface CommentProps {
   id: number;
   key: React.Key;
+  child: number[] | null;
 }

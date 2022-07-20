@@ -16,18 +16,34 @@ const DivContainer = styled.div`
 const NewsSummary: React.FC<NewsSummaryProps> = (props: NewsSummaryProps) => {
   let store = useContext(NewsContext);
 
-  let formattedDate: Date = new Date(props.data.time * 1000);
+  let dateFormatOptions: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+  };
+  let formattedDate: string = new Date(props.data.time * 1000).toLocaleDateString('en-US', dateFormatOptions);
 
-  return (
-    <DivContainer>
-      <p>{props.number + 1 + '. ' + props.data.title}</p>
-      <p>{'Rating: ' + props.data.score + ', author: ' + props.data.by}</p>
-      <p>{'Publication date: ' + formattedDate}</p>
-      <NavLink onClick={(event) => store?.setSelectedNewCallback(event, props.data)} to="/info">
-        More information...
-      </NavLink>
-    </DivContainer>
-  );
+  const navClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    store?.setSelectedNewCallback(event, props.data);
+    clearInterval(props.interval_id);
+  };
+
+  const renderSummary = () => {
+    return (
+      <DivContainer>
+        <p>{props.number + 1 + '. ' + props.data.title}</p>
+        <p>{'Rating: ' + props.data.score + ', author: ' + props.data.by}</p>
+        <p>{'Publication date: ' + formattedDate}</p>
+        <NavLink onClick={navClick} to="/info">
+          More information...
+        </NavLink>
+      </DivContainer>
+    );
+  };
+
+  return <>{renderSummary()}</>;
 };
 
 export default NewsSummary;

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 
 import Comment from './Comment';
@@ -50,57 +50,69 @@ const NewsInfo: React.FC = () => {
   let store = useContext(NewsContext);
   let selectedNew = store?.selectedNew;
 
-  let formattedDate: Date = new Date(selectedNew.time * 1000);
+  if (!selectedNew) {
+    selectedNew = localStorage.getItem('selectedNewObject');
+    selectedNew = JSON.parse(selectedNew);
+  }
 
-  let [child, setChild] = useState<Array<number>>(() => {
+  let dateFormatOptions: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+  };
+  let formattedDate: string = new Date(selectedNew.time * 1000).toLocaleDateString('en-US', dateFormatOptions);
+
+  const [commentsId, setCommentsId] = useState<number[]>(() => {
     return [];
   });
 
+  const IntervalID: React.MutableRefObject<NodeJS.Timer | undefined> = useRef();
+
   useEffect(() => {
-    setChild(() => {
+    setCommentsId(() => {
       return selectedNew.kids;
     });
   }, [selectedNew.kids]);
 
   useEffect(() => {
-    setInterval(() => {
-      if (window.location.pathname === '/info') {
-        setChild(() => {
-          return [];
-        });
-
-        let url = `https://hacker-news.firebaseio.com/v0/item/${selectedNew.id}.json?print=pretty`;
-        fetch(url)
-          .then((response) => response.json())
-          .then((json) => {
-            setChild(() => {
-              return json.kids;
-            });
-          });
-      }
+    IntervalID.current = setInterval(() => {
+      refreshOnCLick();
     }, 60000);
-  }, [selectedNew.id]);
+  }, [commentsId, selectedNew.id]);
 
   const refreshOnCLick = (): void => {
-    setChild(() => {
-      return [];
-    });
+    let tempCommentsIdArray: number[] = [];
 
     let url = `https://hacker-news.firebaseio.com/v0/item/${selectedNew.id}.json?print=pretty`;
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
-        setChild(() => {
-          return json.kids;
-        });
+        tempCommentsIdArray = json.kids;
+        updateComments(tempCommentsIdArray);
       });
   };
 
-  const getChild = (): JSX.Element[] | null => {
-    if (!child) return null;
+  const updateComments = (updatedCommentsId: number[] | undefined): void => {
+    if (!updatedCommentsId) return; // детей может не быть, тогда будет не пустой массив а ничего
 
-    return child.map((elem: number) => {
-      return <Comment id={elem} key={elem} />;
+    updatedCommentsId.forEach((comment) => {
+      if (!commentsId.includes(comment)) {
+        setCommentsId((prevState) => [...prevState, comment]);
+      }
+    });
+  };
+
+  const navClick = () => {
+    clearInterval(IntervalID.current);
+  };
+
+  const getChild = (): JSX.Element[] | null => {
+    if (!commentsId) return null;
+
+    return commentsId.map((elem: number) => {
+      return <Comment id={elem} key={elem} child={null} />;
     });
   };
 
@@ -115,7 +127,7 @@ const NewsInfo: React.FC = () => {
           {'Link: '}
           <a href={selectedNew.url}>{selectedNew.url}</a>
         </TitleText>
-        <NavLink to="/">
+        <NavLink to="/" onClick={navClick}>
           <NavLinkText>Back to news list...</NavLinkText>
         </NavLink>
         <div>
