@@ -2,7 +2,7 @@ import './App.css';
 import HackerNews from './HackerNews/HackerNews';
 import React from 'react';
 
-const App: () => JSX.Element = () => {
+const App: React.FC = () => {
   return (
     <>
       <HackerNews />
