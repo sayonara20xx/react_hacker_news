@@ -3,23 +3,10 @@ import parse from 'html-react-parser';
 import styled from 'styled-components';
 
 import { CommentInfo, CommentProps } from './Interfaces';
+import { Card } from 'react-bootstrap';
 
-const Comm = styled.div`
-  background-color: #fda06d;
-  margin-top: 20px;
-  padding: 5px;
-  border-radius: 5px;
-
-  border: solid 1px black;
-`;
-
-const ShiftContainer = styled.div`
-  margin-left: 50px;
-  margin-top: 50px;
-`;
-
-const Nickname = styled.p`
-  font-size: 20px;
+const HighlightedP = styled.p`
+  text-decoration: underline;
 `;
 
 const Comment: React.FC<CommentProps> = (props: CommentProps) => {
@@ -28,7 +15,7 @@ const Comment: React.FC<CommentProps> = (props: CommentProps) => {
   });
 
   const [commentKids, setCommentKids] = useState<number[] | null>(() => {
-    return [];
+    return null;
   });
 
   const [isClicked, setIsClicked] = useState(() => false);
@@ -66,11 +53,11 @@ const Comment: React.FC<CommentProps> = (props: CommentProps) => {
     }
 
     return (
-      <ShiftContainer>
+      <div className="mt-1">
         {commentKids.map((elem) => {
           return <Comment id={elem} key={elem} child={null} />;
         })}
-      </ShiftContainer>
+      </div>
     );
   };
 
@@ -82,27 +69,30 @@ const Comment: React.FC<CommentProps> = (props: CommentProps) => {
 
   const returnText = () => {
     if (!commentInfo?.text) {
-      return 'loading...';
+      return null;
     }
 
     if (!commentKids) {
-      return parse(commentInfo.text);
-    } else {
-      return (
-        <>
-          {parse(commentInfo.text)}
-          <p>Click to view replies!</p>
-        </>
-      );
+      return <>{parse(commentInfo.text)}</>;
     }
+
+    let viewOrHideText = !isClicked ? 'view' : 'hide';
+    return (
+      <>
+        {parse(commentInfo.text)}
+        <HighlightedP>{`Click to ${viewOrHideText} replies!`}</HighlightedP>
+      </>
+    );
   };
 
   return (
-    <Comm>
-      <Nickname>{commentInfo?.by}</Nickname>
-      <div onClick={commClicked}>{returnText()}</div>
-      {renderComments()}
-    </Comm>
+    <Card className="mt-4">
+      <Card.Body>
+        <Card.Title>{commentInfo?.by}</Card.Title>
+        <Card.Text onClick={commClicked}>{returnText()}</Card.Text>
+        {renderComments()}
+      </Card.Body>
+    </Card>
   );
 };
 

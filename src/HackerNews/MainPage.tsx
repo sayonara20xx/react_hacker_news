@@ -1,52 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
-import { Response } from './Interfaces';
+import { NewsDataResponse } from './Interfaces';
 import NewsSummary from './NewsSummary';
-
-const DivWrapper = styled.div`
-  width: 80%;
-  margin: 0 auto;
-  background-color: #e37d62;
-  padding: 30px;
-`;
-
-const RefreshButton = styled.button`
-  width: 40%;
-  height: 35px;
-  margin: 0 auto 10px auto;
-  border-radius: 10px;
-  background-color: #e35d63;
-`;
-
-const ButtonText = styled.p`
-  font-size: 20px;
-`;
-
-const NewsListHeader = styled.div`
-  width: 60%;
-  background-color: #fda06d;
-  border-radius: 10px;
-  padding: 10px;
-  margin: 0 auto 20px auto;
-`;
-
-const HeaderText = styled.p`
-  font-size: 30px;
-  text-align: center;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-`;
+import { Button, Card } from 'react-bootstrap';
 
 const MainPage: React.FC = () => {
   const newStoriesUrl = 'https://hacker-news.firebaseio.com/v0/newstories.json?print=pretty';
   const IntervalID: React.MutableRefObject<NodeJS.Timer | undefined> = useRef();
 
-  const [news, setNews] = useState<Array<Response>>(() => {
+  const [news, setNews] = useState<Array<NewsDataResponse>>(() => {
     return [];
   });
   const [newsIds, setNewsIds] = useState<Number[]>(() => {
@@ -65,23 +30,12 @@ const MainPage: React.FC = () => {
     });
 
     IntervalID.current = setInterval(() => {
-      setNewsIds(() => {
-        return [];
-      });
-      setNews(() => {
-        return [];
-      });
-
-      fetchNewsIdsByUrl(newStoriesUrl).then((json) => {
-        setNewsIds(() => {
-          return json.slice(0, 100);
-        });
-      });
+      refreshButtonClick();
     }, 60000);
   }, []);
 
   useEffect(() => {
-    let tempArray: Response[] = [];
+    let tempArray: NewsDataResponse[] = [];
     newsIds.forEach((id) => {
       let detailsUrl = `https://hacker-news.firebaseio.com/v0/item/${id}.json?print=pretty`;
 
@@ -97,45 +51,56 @@ const MainPage: React.FC = () => {
     });
   }, [newsIds]);
 
-  const refreshButtonClick = (): void => {
+  const clearNews = () => {
     setNewsIds(() => {
       return [];
     });
     setNews(() => {
       return [];
     });
+  };
 
+  const refreshButtonClick = (): void => {
     fetch(newStoriesUrl)
       .then((response) => response.json())
       .then((json) => {
+        clearNews();
         setNewsIds(() => {
           return json.slice(0, 100);
         });
       });
   };
 
-  const getNewsSummaries = () => {
+  const getNewsSummaries = (): JSX.Element[] | JSX.Element => {
     if (news?.length === 0) return <p>Loading...</p>;
 
-    return news.map((elem: Response, index) => {
-      return <NewsSummary data={elem} number={index} key={elem.title} interval_id={IntervalID.current} />;
+    return news.map((elem: NewsDataResponse, index) => {
+      return (
+        <Col key={elem.id}>
+          <NewsSummary data={elem} number={index} interval_id={IntervalID.current} />
+        </Col>
+      );
     });
   };
 
   return (
-    <DivWrapper>
-      <NewsListHeader>
-        <HeaderText>Welcome to Hacker news (new!)</HeaderText>
-      </NewsListHeader>
-
-      <ButtonContainer>
-        <RefreshButton onClick={refreshButtonClick}>
-          <ButtonText>Refresh!</ButtonText>
-        </RefreshButton>
-      </ButtonContainer>
-
-      {getNewsSummaries()}
-    </DivWrapper>
+    <Container>
+      <Row className={'justify-content-md-center mt-3'}>
+        <Col>
+          <Card>
+            <Card.Body>
+              <p>Welcome to Hacker news (new!)</p>
+              <Button variant="primary" onClick={refreshButtonClick}>
+                Refresh!
+              </Button>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+      <Row xs={1} md={3} className="gy-5 gx-6 mt-1 mb-3">
+        {getNewsSummaries()}
+      </Row>
+    </Container>
   );
 };
 

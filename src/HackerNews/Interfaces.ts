@@ -1,6 +1,6 @@
 import React from 'react';
 
-export interface Response {
+export interface NewsDataResponse {
   by: string;
   id: number;
   descendants: number;

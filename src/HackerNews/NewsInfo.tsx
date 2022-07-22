@@ -1,50 +1,11 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import { NavLink } from 'react-router-dom';
 
 import Comment from './Comment';
-import styled from 'styled-components';
 
 import { NewsContext } from './SelectedNewStore';
+import { Button, Card, Stack } from 'react-bootstrap';
 
-const NewDiv = styled.div`
-  width: 80%;
-  margin: 0 auto;
-  background-color: bisque;
-  padding: 20px;
-`;
-
-const NewHeaderDiv = styled.div`
-  width: 50%;
-  margin: 0 auto;
-  background-color: burlywood;
-
-  border-radius: 10px;
-  padding: 10px;
-`;
-
-const Comments = styled.div`
-  margin-top: 20px;
-`;
-
-const NavLinkText = styled.p`
-  font-size: 20px;
-`;
-
-const RefreshButton = styled.button`
-  width: 50%;
-  height: 50px;
-  background-color: #e35d63;
-  border-radius: 20px;
-`;
-
-const ButtonText = styled.p`
-  font-size: 20px;
-  padding-top: 5px;
-`;
-
-const TitleText = styled.p`
-  font-size: 20px;
-`;
+import { StyledNavLink } from './NewsSummary';
 
 const NewsInfo: React.FC = () => {
   let store = useContext(NewsContext);
@@ -74,13 +35,11 @@ const NewsInfo: React.FC = () => {
     setCommentsId(() => {
       return selectedNew.kids;
     });
-  }, [selectedNew.kids]);
 
-  useEffect(() => {
     IntervalID.current = setInterval(() => {
       refreshOnCLick();
     }, 60000);
-  }, [commentsId, selectedNew.id]);
+  }, []);
 
   const refreshOnCLick = (): void => {
     let tempCommentsIdArray: number[] = [];
@@ -95,7 +54,7 @@ const NewsInfo: React.FC = () => {
   };
 
   const updateComments = (updatedCommentsId: number[] | undefined): void => {
-    if (!updatedCommentsId) return; // детей может не быть, тогда будет не пустой массив а ничего
+    if (!updatedCommentsId) return;
 
     updatedCommentsId.forEach((comment) => {
       if (!commentsId.includes(comment)) {
@@ -104,11 +63,11 @@ const NewsInfo: React.FC = () => {
     });
   };
 
-  const navClick = () => {
+  const navClick = (): void => {
     clearInterval(IntervalID.current);
   };
 
-  const getChild = (): JSX.Element[] | null => {
+  const renderRootComments = (): JSX.Element[] | null => {
     if (!commentsId) return null;
 
     return commentsId.map((elem: number) => {
@@ -117,27 +76,32 @@ const NewsInfo: React.FC = () => {
   };
 
   return (
-    <NewDiv>
-      <NewHeaderDiv>
-        <TitleText>{'Title: ' + selectedNew.title}</TitleText>
-        <TitleText>{'Rating: ' + selectedNew.score + ', author: ' + selectedNew.by}</TitleText>
-        <TitleText>{'Publication date: ' + formattedDate}</TitleText>
-        <TitleText>{'Comments quantity: ' + selectedNew.descendants}</TitleText>
-        <TitleText>
-          {'Link: '}
-          <a href={selectedNew.url}>{selectedNew.url}</a>
-        </TitleText>
-        <NavLink to="/" onClick={navClick}>
-          <NavLinkText>Back to news list...</NavLinkText>
-        </NavLink>
-        <div>
-          <RefreshButton onClick={refreshOnCLick}>
-            <ButtonText>Refresh comments!</ButtonText>
-          </RefreshButton>
-        </div>
-      </NewHeaderDiv>
-      <Comments>{getChild()}</Comments>
-    </NewDiv>
+    <Stack className="col-md-6 mt-4 mb-4 mx-auto">
+      <Card bg="info">
+        <Card.Body>
+          <Card.Title>{`Title: ${selectedNew.title}`}</Card.Title>
+          <Card.Subtitle>{`Rating: ${selectedNew.score}, author: ' ${selectedNew.by}`}</Card.Subtitle>
+          <Card.Text>{`Publication date: ${formattedDate}`}</Card.Text>
+          <Card.Text>{`Comments quantity: ${selectedNew.descendants}`}</Card.Text>
+          <Card.Text>
+            {'Link: '}
+            <a href={selectedNew.url}>{selectedNew.url}</a>
+          </Card.Text>
+          <Button>
+            <StyledNavLink to="/" onClick={navClick}>
+              Back to news list...
+            </StyledNavLink>
+          </Button>
+          <div>
+            <Button className="mt-1" onClick={refreshOnCLick}>
+              Refresh comments!
+            </Button>
+          </div>
+        </Card.Body>
+      </Card>
+
+      <div className="mt-2">{renderRootComments()}</div>
+    </Stack>
   );
 };
 

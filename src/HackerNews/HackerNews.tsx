@@ -5,23 +5,12 @@ import MainPage from './MainPage';
 import NewsInfo from './NewsInfo';
 
 import { NewsContext } from './SelectedNewStore';
+import { NewsDataResponse } from './Interfaces';
 
-interface response {
-  by: string;
-  id: number;
-  descendants: number;
-  kids: Array<number>;
-  score: number;
-  time: number;
-  title: string;
-  type: string;
-  url: string;
-}
+const HackerNews: React.FC = () => {
+  const [selectedNew, setSelectedNew] = useState<NewsDataResponse | null>(null);
 
-const HackerNews: () => JSX.Element = () => {
-  const [selectedNew, setSelectedNew] = useState<response | null>(null);
-
-  const setSelectedNewCallback = (event: React.MouseEvent<HTMLAnchorElement>, obj: response): void => {
+  const setSelectedNewCallback = (event: React.MouseEvent<HTMLAnchorElement>, obj: NewsDataResponse): void => {
     setSelectedNew(() => {
       return obj;
     });
