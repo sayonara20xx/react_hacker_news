@@ -10,7 +10,7 @@ import { NewsDataResponse } from './Interfaces';
 const HackerNews: React.FC = () => {
   const [selectedNew, setSelectedNew] = useState<NewsDataResponse | null>(null);
 
-  const setSelectedNewCallback = (event: React.MouseEvent<HTMLAnchorElement>, obj: NewsDataResponse): void => {
+  const setSelectedNewCallback = (obj: NewsDataResponse): void => {
     setSelectedNew(() => {
       return obj;
     });
@@ -28,7 +28,7 @@ const HackerNews: React.FC = () => {
       <NewsContext.Provider value={SelectedNewStore}>
         <Routes>
           <Route path="/" element={<MainPage />} />
-          <Route path="/info" element={<NewsInfo />} />
+          <Route path="/info/:id" element={<NewsInfo />} />
         </Routes>
       </NewsContext.Provider>
     </BrowserRouter>

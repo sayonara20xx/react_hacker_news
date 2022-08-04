@@ -5,18 +5,12 @@ import styled from 'styled-components';
 import { CommentInfo, CommentProps } from './Interfaces';
 import { Card } from 'react-bootstrap';
 
-const HighlightedP = styled.p`
+const HighlightedP = styled.span`
   text-decoration: underline;
 `;
 
 const Comment: React.FC<CommentProps> = (props: CommentProps) => {
-  const [commentInfo, setCommentInfo] = useState<CommentInfo | null>(() => {
-    return null;
-  });
-
-  const [commentKids, setCommentKids] = useState<number[] | null>(() => {
-    return null;
-  });
+  const [commentInfo, setCommentInfo] = useState<CommentInfo | null>(null);
 
   const [isClicked, setIsClicked] = useState(() => false);
 
@@ -25,36 +19,26 @@ const Comment: React.FC<CommentProps> = (props: CommentProps) => {
 
     fetch(url)
       .then((response) => response.json())
-      .then((json) =>
+      .then((json) => {
         setCommentInfo(() => {
           return {
             text: json.text,
             by: json.by,
+            kids: json.kids,
+            isDeleted: json.deleted,
           };
-        }),
-      );
-  }, [props.id]);
-
-  useEffect(() => {
-    let url = `https://hacker-news.firebaseio.com/v0/item/${props.id}.json?print=pretty`;
-
-    fetch(url)
-      .then((response) => response.json())
-      .then((json) => {
-        setCommentKids(() => {
-          return json.kids;
         });
       });
   }, [props.id]);
 
-  const renderComments: () => JSX.Element | null = () => {
-    if (!isClicked || !commentKids || !props.id || commentKids.length === 0) {
+  const renderKidsComments: () => JSX.Element | null = () => {
+    if (!isClicked || !commentInfo?.kids || !props.id || commentInfo?.kids.length === 0) {
       return null;
     }
 
     return (
       <div className="mt-1">
-        {commentKids.map((elem) => {
+        {commentInfo?.kids.map((elem) => {
           return <Comment id={elem} key={elem} child={null} />;
         })}
       </div>
@@ -72,7 +56,7 @@ const Comment: React.FC<CommentProps> = (props: CommentProps) => {
       return null;
     }
 
-    if (!commentKids) {
+    if (!commentInfo?.kids) {
       return <>{parse(commentInfo.text)}</>;
     }
 
@@ -85,15 +69,21 @@ const Comment: React.FC<CommentProps> = (props: CommentProps) => {
     );
   };
 
-  return (
-    <Card className="mt-4">
-      <Card.Body>
-        <Card.Title>{commentInfo?.by}</Card.Title>
-        <Card.Text onClick={commClicked}>{returnText()}</Card.Text>
-        {renderComments()}
-      </Card.Body>
-    </Card>
-  );
+  const returnNotDeleted: () => JSX.Element | null = () => {
+    if (commentInfo?.isDeleted) return null;
+
+    return (
+      <Card className="mt-4">
+        <Card.Body>
+          <Card.Title>{commentInfo?.by}</Card.Title>
+          <span onClick={commClicked}>{returnText()}</span>
+          {renderKidsComments()}
+        </Card.Body>
+      </Card>
+    );
+  };
+
+  return <>{returnNotDeleted()}</>;
 };
 
 export default Comment;

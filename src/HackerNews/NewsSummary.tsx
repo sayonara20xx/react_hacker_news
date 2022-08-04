@@ -28,7 +28,7 @@ const NewsSummary: React.FC<NewsSummaryProps> = (props: NewsSummaryProps) => {
   let formattedDate: string = new Date(props.data.time * 1000).toLocaleDateString('en-US', dateFormatOptions);
 
   const navClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    store?.setSelectedNewCallback(event, props.data);
+    store?.setSelectedNewCallback(props.data);
     clearInterval(props.interval_id);
   };
 
@@ -40,7 +40,7 @@ const NewsSummary: React.FC<NewsSummaryProps> = (props: NewsSummaryProps) => {
           <Card.Subtitle>{`Rating: ${props.data.score}, author: ${props.data.by}`}</Card.Subtitle>
           <Card.Text>{`Publication date: ${formattedDate}`}</Card.Text>
           <Button variant="danger">
-            <StyledNavLink onClick={navClick} to="/info">
+            <StyledNavLink onClick={navClick} to={`/info/${props.data.id}`}>
               More information...
             </StyledNavLink>
           </Button>

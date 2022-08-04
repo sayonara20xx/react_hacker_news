@@ -9,66 +9,57 @@ import { Button, Card } from 'react-bootstrap';
 
 const MainPage: React.FC = () => {
   const newStoriesUrl = 'https://hacker-news.firebaseio.com/v0/newstories.json?print=pretty';
-  const IntervalID: React.MutableRefObject<NodeJS.Timer | undefined> = useRef();
+  const intervalID: React.MutableRefObject<NodeJS.Timer | undefined> = useRef();
 
-  const [news, setNews] = useState<Array<NewsDataResponse>>(() => {
-    return [];
-  });
-  const [newsIds, setNewsIds] = useState<Number[]>(() => {
-    return [];
-  });
+  const [news, setNews] = useState<NewsDataResponse[]>([]);
 
   const fetchNewsIdsByUrl = (url: string): Promise<Number[]> => {
     return fetch(url).then((response) => response.json());
   };
 
   useEffect(() => {
-    fetchNewsIdsByUrl(newStoriesUrl).then((json) => {
-      setNewsIds(() => {
-        return json.slice(0, 100);
-      });
-    });
-
-    IntervalID.current = setInterval(() => {
+    updateNews();
+    intervalID.current = setInterval(() => {
       refreshButtonClick();
     }, 60000);
+
+    return () => clearInterval(intervalID.current);
   }, []);
 
-  useEffect(() => {
-    let tempArray: NewsDataResponse[] = [];
-    newsIds.forEach((id) => {
-      let detailsUrl = `https://hacker-news.firebaseio.com/v0/item/${id}.json?print=pretty`;
+  const updateNews: () => void = () => {
+    let newsIds: Number[] = [];
 
-      fetch(detailsUrl)
-        .then((response) => response.json())
-        .then((json) => {
-          tempArray = [...tempArray, json];
-          if (tempArray.length === 100) {
-            tempArray = tempArray.sort((a, b) => a.time - b.time);
-            setNews(tempArray);
-          }
+    fetchNewsIdsByUrl(newStoriesUrl)
+      .then((json) => {
+        newsIds = json.slice(0, 100);
+        return new Promise<Number[]>((resolve) => {
+          resolve(newsIds);
         });
-    });
-  }, [newsIds]);
+      })
+      .then((newsIds) => {
+        let newsPromises = newsIds.map((id) => {
+          let detailsUrl = `https://hacker-news.firebaseio.com/v0/item/${id}.json?print=pretty`;
+          return fetch(detailsUrl).then((response) => response.json());
+        });
+
+        return new Promise<Promise<NewsDataResponse>[]>((resolve) => resolve(newsPromises));
+      })
+      .then((newsPromises) => {
+        Promise.all(newsPromises).then((jsons) => {
+          setNews(jsons);
+        });
+      });
+  };
 
   const clearNews = () => {
-    setNewsIds(() => {
-      return [];
-    });
     setNews(() => {
       return [];
     });
   };
 
   const refreshButtonClick = (): void => {
-    fetch(newStoriesUrl)
-      .then((response) => response.json())
-      .then((json) => {
-        clearNews();
-        setNewsIds(() => {
-          return json.slice(0, 100);
-        });
-      });
+    clearNews();
+    updateNews();
   };
 
   const getNewsSummaries = (): JSX.Element[] | JSX.Element => {
@@ -77,7 +68,7 @@ const MainPage: React.FC = () => {
     return news.map((elem: NewsDataResponse, index) => {
       return (
         <Col key={elem.id}>
-          <NewsSummary data={elem} number={index} interval_id={IntervalID.current} />
+          <NewsSummary data={elem} number={index} interval_id={intervalID.current} />
         </Col>
       );
     });
@@ -85,7 +76,7 @@ const MainPage: React.FC = () => {
 
   return (
     <Container>
-      <Row className={'justify-content-md-center mt-3'}>
+      <Row className="justify-content-md-center mt-3">
         <Col>
           <Card>
             <Card.Body>

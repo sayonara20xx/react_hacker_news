@@ -32,6 +32,8 @@ export interface NewsSummaryProps {
 export interface CommentInfo {
   text: string;
   by: string;
+  kids: number[];
+  isDeleted: boolean;
 }
 
 export interface CommentProps {
