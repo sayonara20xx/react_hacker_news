@@ -2,6 +2,7 @@
 
 # IDE
 .idea
+codeStyleConfig.xml
 
 # dependencies
 /node_modules
