@@ -1,0 +1,8 @@
+node_modules
+Dockerfile
+.git
+.prettierrc.js
+README.md
+tsconfig.json
+package-lock.json
+.gitignore
