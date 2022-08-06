@@ -34,6 +34,7 @@ export interface CommentInfo {
   by: string;
   kids: number[];
   isDeleted: boolean;
+  isDead: boolean;
 }
 
 export interface CommentProps {

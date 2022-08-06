@@ -26,6 +26,7 @@ const Comment: React.FC<CommentProps> = (props: CommentProps) => {
             by: json.by,
             kids: json.kids,
             isDeleted: json.deleted,
+            isDead: json.dead,
           };
         });
       });
@@ -70,7 +71,7 @@ const Comment: React.FC<CommentProps> = (props: CommentProps) => {
   };
 
   const returnNotDeleted: () => JSX.Element | null = () => {
-    if (commentInfo?.isDeleted) return null;
+    if (commentInfo?.isDeleted || commentInfo?.isDead) return null;
 
     return (
       <Card className="mt-4">

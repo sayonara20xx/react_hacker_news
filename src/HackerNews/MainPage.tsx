@@ -52,9 +52,7 @@ const MainPage: React.FC = () => {
   };
 
   const clearNews = () => {
-    setNews(() => {
-      return [];
-    });
+    setNews([]);
   };
 
   const refreshButtonClick = (): void => {

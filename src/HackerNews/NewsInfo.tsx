@@ -26,7 +26,6 @@ const NewsInfo: React.FC = () => {
   }
 
   const [commentsId, setCommentsId] = useState<number[]>([]);
-
   const IntervalID: React.MutableRefObject<NodeJS.Timer | undefined> = useRef();
 
   useEffect(() => {
@@ -38,22 +37,24 @@ const NewsInfo: React.FC = () => {
           setSelectedNew(json);
         });
     }
+    refreshOnClick();
 
     setCommentsId((prevState) => {
       if (selectedNew) return selectedNew?.kids;
-
       return prevState;
     });
 
     IntervalID.current = setInterval(() => {
       refreshOnClick();
     }, 60000);
+
+    return () => { clearInterval(IntervalID.current); };
   }, []);
 
   const refreshOnClick = (): void => {
     let tempCommentsIdArray: number[] = [];
 
-    let url = `https://hacker-news.firebaseio.com/v0/item/${selectedNew?.id}.json?print=pretty`;
+    let url = `https://hacker-news.firebaseio.com/v0/item/${id}.json?print=pretty`;
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
@@ -64,12 +65,8 @@ const NewsInfo: React.FC = () => {
 
   const updateComments = (updatedCommentsId: number[] | undefined): void => {
     if (!updatedCommentsId) return;
-
-    updatedCommentsId.forEach((comment) => {
-      if (!commentsId.includes(comment)) {
-        setCommentsId((prevState) => [...prevState, comment]);
-      }
-    });
+    setCommentsId([]);
+    setCommentsId(updatedCommentsId);
   };
 
   const navClick = (): void => {
