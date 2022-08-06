@@ -20,15 +20,13 @@ const Comment: React.FC<CommentProps> = (props: CommentProps) => {
     fetch(url)
       .then((response) => response.json())
       .then((json) => {
-        setCommentInfo(() => {
-          return {
+        setCommentInfo({
             text: json.text,
             by: json.by,
             kids: json.kids,
             isDeleted: json.deleted,
             isDead: json.dead,
-          };
-        });
+          });
       });
   }, [props.id]);
 
